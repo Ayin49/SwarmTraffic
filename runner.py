@@ -1,23 +1,3 @@
-
-# Eclipse SUMO, Simulation of Urban MObility; see https://eclipse.org/sumo
-# Copyright (C) 2009-2023 German Aerospace Center (DLR) and others.
-# This program and the accompanying materials are made available under the
-# terms of the Eclipse Public License 2.0 which is available at
-# https://www.eclipse.org/legal/epl-2.0/
-# This Source Code may also be made available under the following Secondary
-# Licenses when the conditions for such availability set forth in the Eclipse
-# Public License 2.0 are satisfied: GNU General Public License, version 2
-# or later which is available at
-# https://www.gnu.org/licenses/old-licenses/gpl-2.0-standalone.html
-# SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
-
-# @file    runner.py
-# @author  Lena Kalleske
-# @author  Daniel Krajzewicz
-# @author  Michael Behrisch
-# @author  Jakob Erdmann
-# @date    2009-03-26
-
 from __future__ import absolute_import
 from __future__ import print_function
 
@@ -83,27 +63,20 @@ def get_induction_cars(junction_id, beta=0.7):
     ew = sum(map(traci.inductionloop.getLastStepVehicleNumber, main_indices[2:])) + beta * sum(map(traci.inductionloop.getLastStepVehicleNumber, ew_indices))
     return [ns, ew]
 
-#def update_queque(trafficlights):
-
 from operator import add
 from math import exp
 def run():
     """init"""
     trafficlights = get_indices()
-    print(trafficlights)
+    #print(trafficlights)
     inductionloops_aggr = {light: [0, 0] for light in trafficlights}
     rand = random
     rand.seed(a=23)
     """execute the TraCI control loop"""
     step = 0
-    #for label in traci.trafficlight.getIDList():
-    #    print(traci.trafficlight.getAllProgramLogics(label))
-    print(traci.inductionloop.getIDList())
+    #print(traci.inductionloop.getIDList())
 
-    #print(traci.inductionloop.getLastStepVehicleNumber(idx))
-        #print(traci.inductionloop.get)
-    # we start with phase 2 where EW has green
-    #traci.trafficlight.setPhase("0", 2)
+
     while traci.simulation.getMinExpectedNumber() > 0:
         traci.simulationStep()
         for light in trafficlights:
@@ -113,23 +86,17 @@ def run():
                 ns_ew = list(map(exp, inductionloops_aggr[light]))
                 if traci.trafficlight.getPhase(light) == 0:
                 # ns green
-                    softmax = ns_ew[0] / sum(ns_ew)
+                    softmax = ns_ew[1] / sum(ns_ew)
                     if rand.random() < softmax:
                         traci.trafficlight.setPhase(light, 1)
 
                 else:
                 # ew green
-                    softmax = ns_ew[1] / sum(ns_ew)
+                    softmax = ns_ew[0] / sum(ns_ew)
                     if rand.random() < softmax:
                         traci.trafficlight.setPhase(light, 3)
 
                 inductionloops_aggr[light] = [0,0]
-    #        if traci.inductionloop.getLastStepVehicleNumber("0") > 0:
-                # there is a vehicle from the north, switch
-    #            traci.trafficlight.setPhase("0", 3)
-    #        else:
-                # otherwise try to keep green for EW
-    #            traci.trafficlight.setPhase("0", 2)
         step += 1
     traci.close()
     sys.stdout.flush()
