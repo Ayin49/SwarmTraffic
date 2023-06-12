@@ -74,13 +74,13 @@ def get_induction_cars(junction_id, beta=0.7, gamma=1.):
     return [ns, ew]
 
 
-def run(alpha=1, beta=0.7, gamma=1.):
+def run(alpha=1, beta=0.7, gamma=1., seed=23):
     """init"""
     trafficlights = get_indices()
     # print(trafficlights)
     inductionloops_aggr = {light: [0, 0] for light in trafficlights}
     rand = random
-    rand.seed(a=23)
+    rand.seed(a=seed)
     """execute the TraCI control loop"""
     step = 0
     # print(traci.inductionloop.getIDList())
@@ -124,7 +124,7 @@ def get_options():
 
 
 # this is the main entry point of this script
-
+#(5.0, 0.8, 2.0)
 if __name__ == "__main__":
     options = get_options()
 
@@ -141,6 +141,6 @@ if __name__ == "__main__":
     #                         "--tripinfo-output", ".\\stats\\tripinfo.xml"])
     traci.start([checkBinary('sumo'), "-c", "C:\\Users\\Ayin\\PycharmProjects\\SwarmTraffic\\data2\\grid66.sumocfg",
                  "--tripinfo-output", ".\\stats\\tripinfo.xml"])
-    run()
+    run(alpha=5.0, beta=0.8, gamma=2.0)
 
 
